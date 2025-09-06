@@ -6,7 +6,7 @@ import pandas as pd
 import os
 
 # ------------------------
-# Initialize Flask app
+# Initialize main Flask app
 # ------------------------
 app = Flask(__name__)
 
@@ -20,12 +20,14 @@ driveway_installation_model_path = './models/driveway_installation.pkl'
 fence_and_gate_model_path = './models/fence_and_gate.pkl'
 
 # ------------------------
-# Prediction function
+# Prediction helper
 # ------------------------
 def get_prediction(data, model_path):
+    """Preprocess input data and make prediction."""
     model_path = os.path.join(os.path.dirname(__file__), model_path)
     input_encoded = pd.DataFrame([data])
     model = joblib.load(open(model_path, 'rb'))
+    # Align input with model features
     missing_cols = [col for col in model.feature_names_ if col not in input_encoded.columns]
     for col in missing_cols:
         input_encoded[col] = 0
@@ -34,7 +36,7 @@ def get_prediction(data, model_path):
     return prediction[0]
 
 # ------------------------
-# API routes
+# Routes
 # ------------------------
 @app.route('/predict/patio_services', methods=['POST'])
 def predict_patio_services():
@@ -85,19 +87,21 @@ def predict_fence_and_gate():
 def home():
     return jsonify({
         'message': 'Welcome to the Multi-Model Prediction API!',
-        'routes': ['/predict/patio_services',
-                   '/predict/artificial_grass',
-                   '/predict/landscaping',
-                   '/predict/driveway_installation',
-                   '/predict/fence_and_gate']
+        'routes': [
+            '/predict/patio_services',
+            '/predict/artificial_grass',
+            '/predict/landscaping',
+            '/predict/driveway_installation',
+            '/predict/fence_and_gate'
+        ]
     })
 
 # ------------------------
-# Run app using DispatcherMiddleware for subpath support
+# Run with DispatcherMiddleware under subpath
 # ------------------------
-if __name__ == '__main__':
-    from flask import Flask as DummyFlask
-    app_dispatch = DispatcherMiddleware(DummyFlask('dummy_root'), {
+if __name__ == "__main__":
+    # Flask sees everything under /credit_score_prediction
+    app_dispatch = DispatcherMiddleware(Flask('dummy_root'), {
         '/credit_score_prediction': app
     })
     run_simple('0.0.0.0', 7001, app_dispatch, use_reloader=False, use_debugger=False)
