@@ -1,1 +1,1 @@
-this is pyhon repo to predict the credit scroes usi ML
+this is pyhon repo to predict the credit scroes usi ML and some prediction techniques..
