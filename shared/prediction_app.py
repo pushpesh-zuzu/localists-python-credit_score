@@ -1,6 +1,4 @@
 from flask import Flask, request, jsonify
-from werkzeug.middleware.dispatcher import DispatcherMiddleware
-from werkzeug.serving import run_simple
 import joblib
 import pandas as pd
 import os
@@ -99,8 +97,4 @@ def home():
     })
 
 if __name__ == '__main__':
-    # Wrap Flask in DispatcherMiddleware so it works under subpath
-    app_dispatch = DispatcherMiddleware(Flask('dummy_root'), {
-        '/credit_score_prediction': app
-    })
-    run_simple('0.0.0.0', 7001, app_dispatch, use_reloader=False, use_debugger=False)
+    app.run(host='0.0.0.0', debug=False, port=7001)
